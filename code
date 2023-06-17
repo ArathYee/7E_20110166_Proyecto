@@ -1,69 +1,71 @@
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <algorithm>
+import javax.swing.JOptionPane;
 
-using namespace std;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-// Define las reglas de diagnóstico
-unordered_map<string, vector<string>> reglas = {
-    {"Gripa", {"tos", "dolor de cabeza", "dolor de garganta"}},
-    {"Covid", {"fiebre", "escalofríos", "dolor muscular"}},
-    {"Neumonía", {"fiebre alta", "dificultad para respirar", "tos con flema"}},
-    {"Asma", {"tos seca", "sibilancias", "dificultad para respirar"}},
-    {"Bronquitis", {"tos con flema", "dolor de pecho", "fatiga"}}
-    // Agrega más reglas según sea necesario
-};
+public class SistemaExperto {
 
-// Función para realizar el diagnóstico
-vector<string> realizar_diagnostico(const vector<string>& sintomas) {
-    vector<string> enfermedades_diagnosticadas;
-    for (const auto& regla : reglas) {
-        const vector<string>& sintomas_enfermedad = regla.second;
-        if (all_of(sintomas_enfermedad.begin(), sintomas_enfermedad.end(),
-                   [&sintomas](const string& sintoma) {
-                       return find(sintomas.begin(), sintomas.end(), sintoma) != sintomas.end();
-                   })) {
-            enfermedades_diagnosticadas.push_back(regla.first);
+    // Definimos los sintomas de diagnóstico
+    private static HashMap<String, ArrayList<String>> reglas = new HashMap<>();
+    static {
+        reglas.put("Gripa", new ArrayList<>(List.of("tos", "dolor de cabeza", "dolor de garganta")));
+        reglas.put("Covid", new ArrayList<>(List.of("fiebre", "escalofrios", "dolor de garganta")));
+        reglas.put("Neumonia", new ArrayList<>(List.of("fiebre", "dificultad para respirar", "tos con flema")));
+        reglas.put("Asma", new ArrayList<>(List.of("tos", "sibilancias", "dificultad para respirar")));
+        reglas.put("Bronquitis", new ArrayList<>(List.of("tos con flema", "dolor de pecho", "fatiga")));
+
+    }
+
+    // Función para realizar el diagnóstico
+    private static ArrayList<String> realizarDiagnostico(ArrayList<String> sintomas) {
+        ArrayList<String> enfermedadesDiagnosticadas = new ArrayList<>();
+        for (HashMap.Entry<String, ArrayList<String>> regla : reglas.entrySet()) {
+            String enfermedad = regla.getKey();
+            ArrayList<String> sintomasEnfermedad = regla.getValue();
+            if (sintomas.containsAll(sintomasEnfermedad)) {
+                enfermedadesDiagnosticadas.add(enfermedad);
+            }
         }
+        return enfermedadesDiagnosticadas;
     }
-    return enfermedades_diagnosticadas;
-}
 
-// Función principal
-int main() {
-    // Obtiene los síntomas del usuario
-    cout << "Ingresa tus síntomas separados por comas: ";
-    string sintomas_input;
-    getline(cin, sintomas_input);
+    // Función principal
+    public static void main(String[] args) {
+        ArrayList<String> sintomas = new ArrayList<>();
 
-    // Separa los síntomas en un vector
-    vector<string> sintomas;
-    size_t pos = 0;
-    string delimiter = ",";
-    while ((pos = sintomas_input.find(delimiter)) != string::npos) {
-        string sintoma = sintomas_input.substr(0, pos);
-        sintomas.push_back(sintoma);
-        sintomas_input.erase(0, pos + delimiter.length());
-    }
-    sintomas.push_back(sintomas_input);
+        // Preguntas para el usuario
+        String[] preguntas = {
+            "¿Tiene tos? (Sí/No)",
+            "¿Tiene dolor de cabeza? (Sí/No)",
+            "¿Tiene dolor de garganta? (Sí/No)",
+            "¿Tiene fiebre? (Sí/No)",
+            "¿Tiene escalofrios? (Sí/No)",
+            "¿Tiene dificultad para respirar? (Sí/No)"
+            "¿Tiene tos con flema? (Sí/No)"
+            "¿Tiene dolor de pecho? (Sí/No)"
+            "¿Tiene fatiga? (Sí/No)"
+        };
 
-    // Realiza el diagnóstico
-    try:
-        vector<string> enfermedades = realizar_diagnostico(sintomas);
+        // Realiza las preguntas y obtiene las respuestas del usuario
+        for (String pregunta : preguntas) {
+            String respuesta = JOptionPane.showInputDialog(null, pregunta);
+            if (respuesta != null && respuesta.equalsIgnoreCase("Sí")) {
+                sintomas.add(pregunta.substring(pregunta.indexOf("síntoma")));
+            }
+        }
+
+        // Realiza el diagnóstico
+        ArrayList<String> enfermedades = realizarDiagnostico(sintomas);
 
         // Muestra los resultados del diagnóstico
-        if (!enfermedades.empty()) {
-            cout << "Las enfermedades posibles son: " << endl;
-            for (const auto& enfermedad : enfermedades) {
-                cout << "- " << enfermedad << endl;
+        if (!enfermedades.isEmpty()) {
+            StringBuilder mensaje = new StringBuilder("Las enfermedades posibles son:\n");
+            for (String enfermedad : enfermedades) {
+                mensaje.append("- ").append(enfermedad).append("\n");
             }
+            JOptionPane.showMessageDialog(null, mensaje.toString());
         } else {
-            cout << "No se encontraron enfermedades que coincidan con los síntomas ingresados." << endl;
+            JOptionPane.showMessageDialog(null, "No se encontraron enfermedades que coincidan con los síntomas ingresados.");
         }
-    except (const exception& e) {
-        cerr << "Error: " << e.what() << endl;
     }
-
-    return 0;
 }
