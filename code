@@ -1,0 +1,69 @@
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+
+using namespace std;
+
+// Define las reglas de diagnóstico
+unordered_map<string, vector<string>> reglas = {
+    {"Gripa", {"tos", "dolor de cabeza", "dolor de garganta"}},
+    {"Covid", {"fiebre", "escalofríos", "dolor muscular"}},
+    {"Neumonía", {"fiebre alta", "dificultad para respirar", "tos con flema"}},
+    {"Asma", {"tos seca", "sibilancias", "dificultad para respirar"}},
+    {"Bronquitis", {"tos con flema", "dolor de pecho", "fatiga"}}
+    // Agrega más reglas según sea necesario
+};
+
+// Función para realizar el diagnóstico
+vector<string> realizar_diagnostico(const vector<string>& sintomas) {
+    vector<string> enfermedades_diagnosticadas;
+    for (const auto& regla : reglas) {
+        const vector<string>& sintomas_enfermedad = regla.second;
+        if (all_of(sintomas_enfermedad.begin(), sintomas_enfermedad.end(),
+                   [&sintomas](const string& sintoma) {
+                       return find(sintomas.begin(), sintomas.end(), sintoma) != sintomas.end();
+                   })) {
+            enfermedades_diagnosticadas.push_back(regla.first);
+        }
+    }
+    return enfermedades_diagnosticadas;
+}
+
+// Función principal
+int main() {
+    // Obtiene los síntomas del usuario
+    cout << "Ingresa tus síntomas separados por comas: ";
+    string sintomas_input;
+    getline(cin, sintomas_input);
+
+    // Separa los síntomas en un vector
+    vector<string> sintomas;
+    size_t pos = 0;
+    string delimiter = ",";
+    while ((pos = sintomas_input.find(delimiter)) != string::npos) {
+        string sintoma = sintomas_input.substr(0, pos);
+        sintomas.push_back(sintoma);
+        sintomas_input.erase(0, pos + delimiter.length());
+    }
+    sintomas.push_back(sintomas_input);
+
+    // Realiza el diagnóstico
+    try:
+        vector<string> enfermedades = realizar_diagnostico(sintomas);
+
+        // Muestra los resultados del diagnóstico
+        if (!enfermedades.empty()) {
+            cout << "Las enfermedades posibles son: " << endl;
+            for (const auto& enfermedad : enfermedades) {
+                cout << "- " << enfermedad << endl;
+            }
+        } else {
+            cout << "No se encontraron enfermedades que coincidan con los síntomas ingresados." << endl;
+        }
+    except (const exception& e) {
+        cerr << "Error: " << e.what() << endl;
+    }
+
+    return 0;
+}
